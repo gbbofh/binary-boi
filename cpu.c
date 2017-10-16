@@ -9,7 +9,6 @@ typedef void (*cpu_handler)(struct cpu* cpu);
 void _cpu_handle_rR_arith(struct cpu* cpu);
 void _cpu_handle_rI_arith(struct cpu* cpu);
 void _cpu_handle_rI_mem(struct cpu* cpu);
-void _cpu_handle_rR_mem(struct cpu* cpu);
 void _cpu_handle_rR_branch(struct cpu* cpu);
  
 void cpu_init(struct cpu* cpu)

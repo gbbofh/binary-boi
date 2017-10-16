@@ -173,6 +173,10 @@ void _cpu_rI_lsr(struct cpu* cpu)
         cpu->r[dest] = rv;
 }
 
+/**
+ * This could be replaced with another instruction.
+ * I don't know what yet, though.
+ */
 void _cpu_rI_nop(struct cpu* cpu)
 {
         cpu->r[0] = cpu->r[0];
@@ -212,40 +216,63 @@ void _cpu_rI_str(struct cpu* cpu)
         cpu->mem[off] = cpu->r[dest];
 }
 
-/**
- * TODO: check for special register access, get src val from register in
- * question.
- */
 void _cpu_rR_psh(struct cpu* cpu)
 {
         int src;
+        int is_spr;
         char src_val;
 
-        src = cpu->ir & CPU_REG_SRC;
+        is_spr = (cpu->ir >> 6) & 0x03;
 
-        cpu->mem[cpu->sp] = src_val;
+        /* TODO: Refactor this. */
+        if(is_spr == 0x03) {
+                cpu->mem[cpu->sp] = cpu->pc;
+        } else if(is_spr == 0x02) {
+                cpu->mem[cpu->sp] = cpu->st;
+        } else {
+                src = cpu->ir & CPU_REG_SRC;
+                src_val = cpu->r[src];
+                cpu->mem[cpu->sp] = src_val;
+        }
+        cpu->sp -= 1;
 }
 
-/**
- * TODO: check for special register access, set reg val accordingly.
- */
 void _cpu_rR_pop(struct cpu* cpu)
 {
+        int src;
+        int is_spr;
+        char src_val;
+
+        is_spr = (cpu->ir >> 6) & 0x03;
+
+        /* TODO: Refactor this. */
+        if(is_spr == 0x03) {
+                cpu->pc = cpu->mem[cpu->sp];
+        } else if(is_spr == 0x02) {
+                cpu->st = cpu->mem[cpu->sp];
+        } else {
+                src = cpu->ir & CPU_REG_SRC;
+                cpu->r[src] = cpu->mem[cpu->sp];
+        }
+
+        cpu->sp += 1;
 }
 
 void _cpu_rR_mov(struct cpu* cpu)
 {
-        /*int src;
+        int src;
         int dest;
 
         src = cpu->ir & CPU_REG_SRC;
         dest = cpu->ir & CPU_REG_DST;
 
-        cpu->r[dest] = cpu->r[src];*/
+        cpu->r[dest] = cpu->r[src];
 }
 
 void _cpu_rR_mvs(struct cpu* cpu)
 {
+        int dest;
+        dest = cpu->ir & CPU_REG_DST;
 }
 
 void _cpu_rR_jmp(struct cpu* cpu)
