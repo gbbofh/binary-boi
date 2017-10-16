@@ -1,3 +1,10 @@
+/**
+ * @file        cpu.h
+ * @author      Garrett Bates <gbates@cs.nmt.edu>
+ * @brief       provides the public interface for a simulated 8-bit processor
+ * @bugs        none known
+ */
+
 #ifndef CPU_H
 #define CPU_H
 
@@ -79,36 +86,49 @@
 /**
  * Flags in the status register
  */
-#define CPU_STZ (1 << 0)        /* Zero flag */
-#define CPU_STN (1 << 1)        /* Negative flag */
-#define CPU_STO (1 << 2)        /* Overflow flag */
-#define CPU_STC (1 << 3)        /* Carry flag */
-#define CPU_GR8 (1 << 4)        /* make SAL/SAH, DAL/DAH independent */
+#define CPU_STZ (1 << 0)        /** Zero flag */
+#define CPU_STN (1 << 1)        /** Negative flag */
+#define CPU_STO (1 << 2)        /** Overflow flag */
+#define CPU_STC (1 << 3)        /** Carry flag */
+#define CPU_GR8 (1 << 4)        /** make SAL/SAH, DAL/DAH independent */
 
 typedef struct cpu {
-        char    r[8];   /* General purpose registers */
-        char    st;     /* Status register */
-        short   pc;     /* Program counter */
-        short   ir;     /* Instruction register */
-        short   sp;     /* Stack pointer */
-        char*   mem;    /* Memory */
+        char    r[8];   /** General purpose registers */
+        char    st;     /** Status register */
+        short   pc;     /** Program counter */
+        short   ir;     /** Instruction register */
+        short   sp;     /** Stack pointer */
+        char*   mem;    /** Memory */
 } cpu;
 
 /**
  * @brief initialize a cpu structure
+ *
+ * Zeroes out a cpu structure, and allocates ~64K to serve as RAM
+ *
  * @param cpu -- cpu structure to initialize
  */
 void cpu_init(struct cpu* cpu);
 
 /**
  * @brief free memory for a cpu structure
+ *
+ * Frees resources for a cpu structure and zeroes out the structure
+ *
  * @param cpu -- cpu structure to deallocate resources from
  */
 void cpu_term(struct cpu* cpu);
 
 /**
  * @brief advance the cpu structure by one clock cycle
- * @param cpu -- cpu structure to clock
+ *
+ * Reads in the next opcode from memory, and advances the program counter by
+ * two bytes. The opcode is decoded and used to select an appropriate
+ * handler function based on the type of instruction that was encountered.
+ * The handlers then pass off control to another handler that actually
+ * implements the operation in question. Convoluted? Maybe. Does it work? Yes.
+ *
+ * @param cpu -- cpu structure to update
  */
 void cpu_clock(struct cpu* cpu);
 

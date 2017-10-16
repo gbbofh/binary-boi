@@ -1,12 +1,17 @@
+/**
+ * @file        ops.h
+ * @author      Garrett Bates <gbates@cs.nmt.edu
+ * @brief       provides implementation for operations performed by cpu
+ * @bugs        none known
+ */
 #ifndef OPS_H
 #define OPS_H
-
-struct cpu;
 
 #define CPU_REG_SRC     (0x00E0)
 #define CPU_REG_DST     (0x0700)
 #define CPU_IMM_VAL     (0x00FF)
 
+struct cpu;
 
 /**
  * ARITHMETIC OPERATIONS

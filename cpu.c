@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,61 +12,34 @@ void _cpu_handle_rI_mem(struct cpu* cpu);
 void _cpu_handle_rR_mem(struct cpu* cpu);
 void _cpu_handle_rR_branch(struct cpu* cpu);
  
-/**
- * Initialize a cpu structure
- */
 void cpu_init(struct cpu* cpu)
 {
         memset(cpu, 0, sizeof(struct cpu));
         cpu->mem = calloc((1 << sizeof(short)) - 1, 1);
 
-        /* TODO: Pre-load input into memory if user supplies a program */
         /* Pre-fetch first instruction from memory */
+        cpu->sp = 0xFFFF;
         cpu->ir = *(short*)(cpu->mem + cpu->pc);
         cpu->pc += 2;
 }
 
-/**
- * De-initialize a cpu structure
- */
 void cpu_term(struct cpu* cpu)
 {
         free(cpu->mem);
         memset(cpu, 0, sizeof(struct cpu));
 }
 
-/**
- * Handle a clock cycle for a cpu structure
- */
 void cpu_clock(struct cpu* cpu)
 {
-        /**
-         * The class of operation being performed
-         * used to select the handler for execution
-         * of next stage
-         */
         int op_class;
 
-        /**
-         * Handler functions for different
-         * cases of operations. Used instead
-         * of a god awful switch statement to
-         * determine what operation is being
-         * performed.
-         */
+        cpu_handler handler;
         cpu_handler handlers[] = {
                 _cpu_handle_rR_arith,
                 _cpu_handle_rI_arith,
                 _cpu_handle_rI_mem,
                 _cpu_handle_rR_branch
         };
-
-        /**
-         * Set to the handler that will be called
-         * according to the decoded instruction
-         * type.
-         */
-        cpu_handler handler;
 
         op_class = (cpu->ir >> 14) & 0x03;
 
